@@ -144,4 +144,9 @@
     <string name="integration_contacts_sync">Update the contacts now</string>
     <string name="integration_contacts_sync_summary">The actions follow your contacts by themselves; this runs it at once</string>
     <string name="integration_contacts_sync_started">Updating the contacts…</string>
+
+    <string name="integration_call_channel">Calls in the phone app</string>
+    <string name="integration_call_channel_description">Shown during calls that run in the system phone app: lets Linphone use the microphone</string>
+    <string name="integration_call_notification_title">Call in progress</string>
+    <string name="integration_call_notification_text">In the phone app - tap to open it</string>
 </resources>

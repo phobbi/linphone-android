@@ -123,4 +123,9 @@
     <string name="integration_contacts_sync">Aktualizovat kontakty</string>
     <string name="integration_contacts_sync_summary">Akce se řídí vašimi kontakty samy; tímto se to provede hned</string>
     <string name="integration_contacts_sync_started">Kontakty se aktualizují…</string>
+
+    <string name="integration_call_channel">Hovory v aplikaci Telefon</string>
+    <string name="integration_call_channel_description">Zobrazuje se během hovorů v systémové aplikaci Telefon: umožňuje Linphone používat mikrofon</string>
+    <string name="integration_call_notification_title">Probíhá hovor</string>
+    <string name="integration_call_notification_text">V aplikaci Telefon – klepnutím ji otevřete</string>
 </resources>

@@ -172,6 +172,17 @@ object ManagedCalls {
             if (ended.size > 50) ended.clear()
             ended.add(id)
         }
+        connectionGone()
+    }
+
+    /** the last managed call is over: the ConnectionService leaves the foreground */
+    @AnyThread
+    fun connectionGone() {
+        if (connections.isEmpty() && offered.isEmpty() && pendingOutgoing == null) {
+            coreContext.postOnMainThread {
+                if (connections.isEmpty() && offered.isEmpty()) ManagedCallForeground.stop()
+            }
+        }
     }
 
     @AnyThread
@@ -239,6 +250,8 @@ object ManagedCalls {
 
     @MainThread
     fun createIncoming(context: Context, request: ConnectionRequest): Connection {
+        // the ConnectionService (Telecom started it) in the foreground: the call may use the microphone
+        if (context is android.app.Service) ManagedCallForeground.start(context)
         val conn = ManagedConnection(context.applicationContext, request.accountHandle, true)
         val id = request.extras?.getString(EXTRA_CALL_ID)
         conn.setAddress(request.address, TelecomManager.PRESENTATION_ALLOWED)
@@ -276,6 +289,7 @@ object ManagedCalls {
     /** the system dialer (or a placeCall of ours) wants a call on one of the calling accounts */
     @MainThread
     fun createOutgoing(context: Context, request: ConnectionRequest): Connection {
+        if (context is android.app.Service) ManagedCallForeground.start(context)
         val conn = ManagedConnection(context.applicationContext, request.accountHandle, false)
         conn.setAddress(request.address, TelecomManager.PRESENTATION_ALLOWED)
         conn.setDialing()

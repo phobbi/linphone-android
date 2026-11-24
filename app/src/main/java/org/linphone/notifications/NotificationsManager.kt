@@ -214,14 +214,12 @@ class NotificationsManager
         ) {
             val currentState = call.state
             Log.i("$TAG Call state changed: [$currentState]")
-            // a managed call rings, shows and is reported missed by the system phone app; the in-call foreground
-            // Service (and its notification) is still needed for the microphone and the process
+            // a managed call rings, shows and is reported missed by the system phone app, and its foreground state
+            // (microphone) is the ConnectionService's (ManagedCallForeground): Linphone's own in-call Service,
+            // started from the background, would be refused the microphone
             val managed = ManagedCalls.isManaged(call) || ManagedCalls.shouldManage(call)
-            if (managed && (
-                    currentState == Call.State.IncomingReceived || currentState == Call.State.IncomingEarlyMedia
-                    )
-            ) {
-                Log.i("$TAG Managed call: the system phone app shows the incoming call")
+            if (managed && currentState != Call.State.Released) {
+                Log.i("$TAG Managed call: no Linphone call notification (state [$currentState])")
                 return
             }
             if (currentState == Call.State.Released && ManagedCalls.wasManaged(call.callLog.callId)) {

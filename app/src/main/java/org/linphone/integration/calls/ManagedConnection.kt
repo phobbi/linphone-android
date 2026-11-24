@@ -195,6 +195,7 @@ class ManagedConnection(
         ended = true
         setDisconnected(DisconnectCause(code, label, label, null))
         destroy()
+        ManagedCalls.connectionGone()
     }
 
     /**

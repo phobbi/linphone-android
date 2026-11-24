@@ -260,6 +260,14 @@
                 android:resource="@xml/integration_contacts" />
         </service>
 
+        <!-- Android integration: the ongoing managed call notification's tap opens the system call screen -->
+        <activity
+            android:name=".integration.calls.ShowCallScreenActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <!-- Services -->
 
         <service
@@ -312,6 +320,7 @@
         </service>-->
 
         <service android:name=".telecom.TelecomConnectionService"
+            android:foregroundServiceType="phoneCall|microphone"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
             android:exported="true">
             <intent-filter>
