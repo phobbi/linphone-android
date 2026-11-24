@@ -82,15 +82,49 @@ object ManagedAccounts {
         return core.accountList.firstOrNull { idOf(it) == id }
     }
 
-    /** the system's view of the account: registered with Telecom and enabled by the user */
+    /** the last state the system told, by handle id (for when it can't be read) */
+    private val lastKnown = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
+
+    /** the permissions Telecom wants for reading the app's own calling accounts (READ_PHONE_NUMBERS: API 31+) */
+    val READ_PERMISSIONS = arrayOf(
+        android.Manifest.permission.READ_PHONE_STATE,
+        android.Manifest.permission.READ_PHONE_NUMBERS
+    )
+
+    @AnyThread
+    fun canReadAccounts(context: Context): Boolean = READ_PERMISSIONS.all {
+        androidx.core.content.ContextCompat.checkSelfPermission(context, it) ==
+            android.content.pm.PackageManager.PERMISSION_GRANTED
+    }
+
+    /**
+     * The system's view of the account: registered with Telecom and enabled by the user. Reading it needs
+     * READ_PHONE_NUMBERS (getPhoneAccount) or READ_PHONE_STATE (getCallCapablePhoneAccounts, which lists the
+     * enabled ones); without either the last known state counts, and with none known the account is taken as
+     * enabled - Telecom itself refuses a call on a disabled one, and the call then stays Linphone's.
+     */
     @AnyThread
     fun isEnabled(context: Context, handle: PhoneAccountHandle): Boolean {
-        return try {
-            telecom(context).getPhoneAccount(handle)?.isEnabled == true
-        } catch (e: SecurityException) {
-            Log.w("$TAG Can't read phone account [${handle.id}]: $e")
-            false
+        val tm = telecom(context)
+        try {
+            val account = tm.getPhoneAccount(handle)
+            if (account != null) {
+                lastKnown[handle.id] = account.isEnabled
+                return account.isEnabled
+            }
+            lastKnown[handle.id] = false
+            return false
+        } catch (_: SecurityException) {
         }
+        try {
+            @Suppress("MissingPermission")
+            val enabled = tm.callCapablePhoneAccounts.contains(handle)
+            lastKnown[handle.id] = enabled
+            return enabled
+        } catch (e: SecurityException) {
+            Log.w("$TAG Can't read whether [${handle.id}] is enabled (no phone permission): $e")
+        }
+        return lastKnown[handle.id] ?: true
     }
 
     /** whether a call on this SIP account runs through the system phone app (managed) */

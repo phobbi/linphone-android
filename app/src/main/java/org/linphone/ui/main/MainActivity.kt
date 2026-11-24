@@ -152,6 +152,15 @@ class MainActivity : GenericActivity() {
         }
     }
 
+    // Android integration: reading whether the system calling accounts are enabled (asked once, not per call)
+    private var integrationPhonePermissionsAsked = false
+    private val integrationPhonePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { result ->
+        Log.i("$TAG Android integration phone permissions: $result")
+        coreContext.postOnCoreThread { core -> org.linphone.integration.calls.ManagedCalls.refresh(core) }
+    }
+
     private val requestReadPhonePermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -511,6 +520,15 @@ class MainActivity : GenericActivity() {
         viewModel.enableAccountMonitoring(true)
         viewModel.updateMissingPermissionAlert()
         viewModel.updateAccountsAndNetworkReachability()
+
+        if (!integrationPhonePermissionsAsked &&
+            org.linphone.integration.IntegrationPrefs.callMode != org.linphone.integration.IntegrationPrefs.CallMode.LINPHONE &&
+            !org.linphone.integration.calls.ManagedAccounts.canReadAccounts(this)
+        ) {
+            integrationPhonePermissionsAsked = true
+            Log.i("$TAG Asking for the phone permissions the system calling accounts need")
+            integrationPhonePermissionsLauncher.launch(org.linphone.integration.calls.ManagedAccounts.READ_PERMISSIONS)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

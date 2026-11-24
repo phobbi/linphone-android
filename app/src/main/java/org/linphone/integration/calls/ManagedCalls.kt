@@ -358,6 +358,11 @@ object ManagedCalls {
             Log.w("$TAG No CALL_PHONE permission: Linphone places the call itself")
             return false
         }
+        // placed only when the system says the account is enabled: with a disabled one Telecom could take the SIM
+        if (!ManagedAccounts.canReadAccounts(appContext)) {
+            Log.w("$TAG No phone permission to read the calling account: Linphone places the call itself")
+            return false
+        }
         val handle = ManagedAccounts.handleOf(appContext, acc)
         if (!ManagedAccounts.isEnabled(appContext, handle)) {
             Log.w("$TAG Calling account [${handle.id}] is not enabled: Linphone places the call itself")

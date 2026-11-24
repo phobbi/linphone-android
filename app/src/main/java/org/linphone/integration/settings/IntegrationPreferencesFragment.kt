@@ -58,10 +58,16 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
         private const val TAG = "[Integration Settings]"
     }
 
-    private val callPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        Log.i("$TAG CALL_PHONE ${if (it) "granted" else "denied"}")
+    // placing calls (CALL_PHONE) and reading whether the calling accounts are enabled (READ_PHONE_*)
+    private val callPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        Log.i("$TAG Phone permissions: $it")
+        coreContext.postOnCoreThread { core -> ManagedCalls.refresh(core) }
         refreshStatus()
     }
+
+    private val phonePermissions = arrayOf(Manifest.permission.CALL_PHONE) + ManagedAccounts.READ_PERMISSIONS
+
+    private fun phonePermissionsGranted() = phonePermissions.all { granted(it) }
 
     // fine location is asked together with coarse (Android 12+: the user may grant only the coarse one, which does
     // not give the Wi-Fi network's name)
@@ -189,7 +195,7 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
             true
         }
         findPreference<Preference>("status_call_permission")?.setOnPreferenceClickListener {
-            if (!granted(Manifest.permission.CALL_PHONE)) callPermission.launch(Manifest.permission.CALL_PHONE)
+            if (!phonePermissionsGranted()) callPermission.launch(phonePermissions)
             true
         }
         findPreference<Preference>("status_location_permission")?.setOnPreferenceClickListener {
@@ -221,8 +227,8 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
         }
         // asking for what a setting needs when it is turned on
         findPreference<ListPreference>("call_mode")?.setOnPreferenceChangeListener { _, value ->
-            if (value != CallMode.LINPHONE.key && !granted(Manifest.permission.CALL_PHONE)) {
-                callPermission.launch(Manifest.permission.CALL_PHONE)
+            if (value != CallMode.LINPHONE.key && !phonePermissionsGranted()) {
+                callPermission.launch(phonePermissions)
             }
             true
         }
@@ -313,7 +319,7 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
             findPreference<Preference>(key)?.isVisible = systemCalls
         }
         findPreference<Preference>("status_call_permission")?.summary = getString(
-            if (granted(Manifest.permission.CALL_PHONE)) {
+            if (phonePermissionsGranted()) {
                 R.string.integration_call_permission_granted
             } else {
                 R.string.integration_call_permission_missing

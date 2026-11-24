@@ -36,9 +36,9 @@
     <string name="integration_calling_accounts_none">No SIP account yet</string>
     <string name="integration_calling_account_enabled">%1$s: enabled</string>
     <string name="integration_calling_account_disabled">%1$s: not enabled - tap to enable it in Settings → Calls → Calling accounts</string>
-    <string name="integration_call_permission">Permission to place calls</string>
-    <string name="integration_call_permission_granted">Granted: calls you start in Linphone run in the system phone app</string>
-    <string name="integration_call_permission_missing">Not granted - tap to allow. Without it, calls you start in Linphone use Linphone\'s call screen.</string>
+    <string name="integration_call_permission">Phone permissions</string>
+    <string name="integration_call_permission_granted">Granted: Linphone sees which calling accounts are enabled and places calls through the system phone app</string>
+    <string name="integration_call_permission_missing">Not granted - tap to allow. Without them Linphone can\'t tell whether a calling account is enabled, and calls you start in Linphone use its own call screen.</string>
     <string name="integration_place_app_calls">Calls from Linphone through the system</string>
     <string name="integration_place_app_calls_summary">Calls you start in Linphone (contacts, history, dial pad) also run in the system phone app</string>
     <string name="integration_accept_numbers">Phone numbers in the system dialer</string>

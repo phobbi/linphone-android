@@ -29,9 +29,9 @@
     <string name="integration_calling_accounts_none">Zatím žádný SIP účet</string>
     <string name="integration_calling_account_enabled">%1$s: zapnutý</string>
     <string name="integration_calling_account_disabled">%1$s: nezapnutý – klepnutím ho zapnete v Nastavení → Hovory → Volací účty</string>
-    <string name="integration_call_permission">Oprávnění volat</string>
-    <string name="integration_call_permission_granted">Uděleno: hovory zahájené v Linphone běží v systémové aplikaci Telefon</string>
-    <string name="integration_call_permission_missing">Neuděleno – klepnutím povolíte. Bez něj hovory zahájené v Linphone používají obrazovku hovoru Linphone.</string>
+    <string name="integration_call_permission">Oprávnění k telefonu</string>
+    <string name="integration_call_permission_granted">Uděleno: Linphone vidí, které volací účty jsou zapnuté, a volá přes systémovou aplikaci Telefon</string>
+    <string name="integration_call_permission_missing">Neuděleno – klepnutím povolíte. Bez nich Linphone nepozná, zda je volací účet zapnutý, a hovory zahájené v Linphone používají jeho vlastní obrazovku hovoru.</string>
     <string name="integration_place_app_calls">Hovory z Linphone přes systém</string>
     <string name="integration_place_app_calls_summary">Hovory zahájené v Linphone (kontakty, historie, číselník) také běží v systémové aplikaci Telefon</string>
     <string name="integration_accept_numbers">Telefonní čísla v systémovém číselníku</string>
