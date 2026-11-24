@@ -149,4 +149,26 @@
     <string name="integration_call_channel_description">Shown during calls that run in the system phone app: lets Linphone use the microphone</string>
     <string name="integration_call_notification_title">Call in progress</string>
     <string name="integration_call_notification_text">In the phone app - tap to open it</string>
+
+    <!-- microphone -->
+    <string name="integration_cat_microphone">Microphone in calls</string>
+    <string name="integration_cat_microphone_summary">Android lets Linphone use the microphone in the background only in certain cases; this keeps it working for calls in the system phone app without a tap</string>
+    <string name="integration_mic_boost">Microphone access</string>
+    <string-array name="integration_mic_boost_entries">
+        <item>Every call: bring Linphone up invisibly for a moment when the call starts (most reliable)</item>
+        <item>Only when Android refused the microphone</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="integration_mic_boost_values" translatable="false">
+        <item>always</item>
+        <item>when_refused</item>
+        <item>never</item>
+    </string-array>
+    <string name="integration_overlay_permission">Display over other apps</string>
+    <string name="integration_overlay_permission_granted">Allowed: Linphone can come up for a moment when a call starts</string>
+    <string name="integration_overlay_permission_missing">Not allowed - tap to allow it (once). Without it Android may not let Linphone take the microphone, and the other side would not hear you.</string>
+    <string name="integration_diagnostics">Diagnostics (tap to copy)</string>
+    <string name="integration_diagnostics_empty">Nothing yet - make a call</string>
+    <string name="integration_diagnostics_copied">Copied to the clipboard</string>
+    <string name="integration_diagnostics_clear">Clear the diagnostics</string>
 </resources>

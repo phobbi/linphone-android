@@ -56,6 +56,36 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        app:key="cat_microphone"
+        app:title="@string/integration_cat_microphone"
+        app:summary="@string/integration_cat_microphone_summary"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            app:key="mic_boost"
+            app:title="@string/integration_mic_boost"
+            app:entries="@array/integration_mic_boost_entries"
+            app:entryValues="@array/integration_mic_boost_values"
+            app:defaultValue="always"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="status_overlay_permission"
+            app:title="@string/integration_overlay_permission"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="status_diagnostics"
+            app:title="@string/integration_diagnostics"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="action_diagnostics_clear"
+            app:title="@string/integration_diagnostics_clear"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="cat_call_screen"
         app:title="@string/integration_cat_call_screen"
         app:iconSpaceReserved="false">

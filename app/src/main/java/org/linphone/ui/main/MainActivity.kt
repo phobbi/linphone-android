@@ -529,6 +529,23 @@ class MainActivity : GenericActivity() {
             Log.i("$TAG Asking for the phone permissions the system calling accounts need")
             integrationPhonePermissionsLauncher.launch(org.linphone.integration.calls.ManagedAccounts.READ_PERMISSIONS)
         }
+        // the microphone for calls the system phone app answers: "display over other apps" (a settings screen, no
+        // dialog exists for it), opened once
+        val prefs = getSharedPreferences("integration_state", MODE_PRIVATE)
+        if (org.linphone.integration.IntegrationPrefs.callMode != org.linphone.integration.IntegrationPrefs.CallMode.LINPHONE &&
+            org.linphone.integration.IntegrationPrefs.micBoost != org.linphone.integration.IntegrationPrefs.MicBoost.NEVER &&
+            !android.provider.Settings.canDrawOverlays(this) && !prefs.getBoolean("overlay_asked", false)
+        ) {
+            prefs.edit { putBoolean("overlay_asked", true) }
+            android.widget.Toast.makeText(this, R.string.integration_overlay_permission_missing, android.widget.Toast.LENGTH_LONG).show()
+            try {
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$packageName"))
+                )
+            } catch (e: Exception) {
+                Log.e("$TAG Can't open the overlay permission screen: $e")
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

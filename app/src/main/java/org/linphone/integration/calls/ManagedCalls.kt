@@ -46,6 +46,7 @@ import org.linphone.core.Core
 import org.linphone.core.CoreListenerStub
 import org.linphone.core.RegistrationState
 import org.linphone.core.tools.Log
+import org.linphone.integration.IntegrationDiag
 import org.linphone.integration.IntegrationPrefs
 import org.linphone.utils.LinphoneUtils
 
@@ -216,7 +217,12 @@ object ManagedCalls {
         if (!::appContext.isInitialized || call.dir != Call.Dir.Incoming) return false
         if (isManaged(call)) return true
         val account = accountOfCall(call) ?: return false
-        if (!ManagedAccounts.isManagedFor(appContext, account)) return false
+        if (!ManagedAccounts.isManagedFor(appContext, account)) {
+            if (call.state == Call.State.IncomingReceived) {
+                IntegrationDiag.add("Incoming call: Linphone's call screen (calling account off, or mode)")
+            }
+            return false
+        }
         if (IntegrationPrefs.videoCallsInLinphone && call.remoteParams?.isVideoEnabled == true) {
             Log.i("$TAG Incoming video call: Linphone's call screen")
             return false
@@ -239,11 +245,11 @@ object ManagedCalls {
         offered.add(id)
         return try {
             appContext.getSystemService(TelecomManager::class.java).addNewIncomingCall(handle, extras)
-            Log.i("$TAG Incoming call [$id] handed to the system phone app")
+            IntegrationDiag.add("Incoming call: handed to the system phone app")
             true
         } catch (e: Exception) {
             offered.remove(id)
-            Log.e("$TAG The system refused the incoming call [$id]: $e")
+            IntegrationDiag.add("Incoming call: the system refused it (${e.javaClass.simpleName}): Linphone's call screen")
             false
         }
     }
@@ -328,6 +334,7 @@ object ManagedCalls {
         if (wantsVideo) Log.i("$TAG Video was asked for: placed as an audio call (the system call screen has no video)")
         params.recordFile = LinphoneUtils.getRecordingFilePathForAddress(target)
         Log.i("$TAG Calling [${target.asStringUriOnly()}] from [${account.params.identityAddress?.asStringUriOnly()}]")
+        IntegrationDiag.add("Outgoing call: in the system phone app")
         // Telecom has held the active call already (it does so for managed calls before placing a new one)
         pendingOutgoing = conn
         val call = core.inviteAddressWithParams(target, params)

@@ -128,4 +128,20 @@
     <string name="integration_call_channel_description">Zobrazuje se během hovorů v systémové aplikaci Telefon: umožňuje Linphone používat mikrofon</string>
     <string name="integration_call_notification_title">Probíhá hovor</string>
     <string name="integration_call_notification_text">V aplikaci Telefon – klepnutím ji otevřete</string>
+
+    <string name="integration_cat_microphone">Mikrofon při hovorech</string>
+    <string name="integration_cat_microphone_summary">Android dovolí Linphone používat mikrofon na pozadí jen v určitých případech; tohle zajistí, že funguje pro hovory v systémové aplikaci Telefon bez klepnutí</string>
+    <string name="integration_mic_boost">Přístup k mikrofonu</string>
+    <string-array name="integration_mic_boost_entries">
+        <item>Každý hovor: na okamžik neviditelně vyvolat Linphone při začátku hovoru (nejspolehlivější)</item>
+        <item>Jen když Android mikrofon odmítl</item>
+        <item>Nikdy</item>
+    </string-array>
+    <string name="integration_overlay_permission">Zobrazení přes jiné aplikace</string>
+    <string name="integration_overlay_permission_granted">Povoleno: Linphone se může při začátku hovoru na okamžik vyvolat</string>
+    <string name="integration_overlay_permission_missing">Nepovoleno – klepnutím povolíte (jednou). Bez toho Android nemusí Linphone dát mikrofon a protistrana by vás neslyšela.</string>
+    <string name="integration_diagnostics">Diagnostika (klepnutím zkopírujete)</string>
+    <string name="integration_diagnostics_empty">Zatím nic – zavolejte</string>
+    <string name="integration_diagnostics_copied">Zkopírováno do schránky</string>
+    <string name="integration_diagnostics_clear">Vymazat diagnostiku</string>
 </resources>

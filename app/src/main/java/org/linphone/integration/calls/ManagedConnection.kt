@@ -72,6 +72,9 @@ class ManagedConnection(
 
     @Volatile private var ended = false
 
+    /** the microphone was made sure of once the call was up */
+    @Volatile private var micEnsured = false
+
     private val callListener = object : CallListenerStub() {
         @WorkerThread
         override fun onStateChanged(call: Call, state: Call.State, message: String) {
@@ -147,6 +150,10 @@ class ManagedConnection(
                 setRingbackRequested(false)
                 setActive()
                 updateProperties(call)
+                if (!micEnsured) {
+                    micEnsured = true
+                    coreContext.postOnMainThread { ManagedCallForeground.ensureMicrophone(context) }
+                }
             }
             Call.State.Paused -> setOnHold()
             Call.State.End, Call.State.Error -> end(call)

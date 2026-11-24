@@ -52,6 +52,10 @@
     with a managed calling account) -->
     <uses-permission android:name="android.permission.CALL_PHONE"/>
 
+    <!-- Android integration: lets Linphone come up for a moment (invisibly) when a call the system phone app runs
+    starts, which is when Android gives it the microphone (granted once by the user) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
     <!-- Android integration: redirect phone calls only on selected Wi-Fi networks (the network name needs the
     location permission, asked for only when networks are selected) -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -259,6 +263,16 @@
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/integration_contacts" />
         </service>
+
+        <!-- Android integration: invisible, gone at once; makes the app visible for the microphone -->
+        <activity
+            android:name=".integration.calls.MicActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- Android integration: the ongoing managed call notification's tap opens the system call screen -->
         <activity

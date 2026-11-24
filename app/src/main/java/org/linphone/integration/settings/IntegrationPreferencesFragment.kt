@@ -38,6 +38,7 @@ import org.linphone.LinphoneApplication.Companion.coreContext
 import org.linphone.LinphoneApplication.Companion.corePreferences
 import org.linphone.R
 import org.linphone.core.tools.Log
+import org.linphone.integration.IntegrationDiag
 import org.linphone.integration.IntegrationPrefs
 import org.linphone.integration.IntegrationPrefs.CallMode
 import org.linphone.integration.IntegrationPrefs.ContactsMode
@@ -144,6 +145,7 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
             "redirect_min_digits" -> IntegrationPrefs.redirectMinDigits.toString()
             "redirect_excluded_prefixes" -> IntegrationPrefs.redirectExcludedPrefixes
             "contacts_mode" -> IntegrationPrefs.contactsMode.key
+            "mic_boost" -> IntegrationPrefs.micBoost.key
             else -> defValue
         }
 
@@ -169,6 +171,7 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
                     "redirect_wifi_networks" -> IntegrationPrefs.redirectWifiNetworks = v.trim()
                     "redirect_min_digits" -> IntegrationPrefs.redirectMinDigits = v.trim().toIntOrNull()?.coerceIn(1, 20) ?: 6
                     "redirect_excluded_prefixes" -> IntegrationPrefs.redirectExcludedPrefixes = v.trim()
+                    "mic_boost" -> IntegrationPrefs.micBoost = IntegrationPrefs.MicBoost.of(v)
                     "contacts_mode" -> {
                         IntegrationPrefs.contactsMode = ContactsMode.of(v)
                         ContactsIntegration.apply(coreContext.context)
@@ -210,6 +213,29 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
         }
         findPreference<Preference>("status_system_call_log")?.setOnPreferenceClickListener {
             callLogSettingsIntent()?.let { intent -> startActivity(intent) }
+            true
+        }
+        findPreference<Preference>("status_overlay_permission")?.setOnPreferenceClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(requireContext())) {
+                startActivity(
+                    Intent(
+                        android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        android.net.Uri.parse("package:${requireContext().packageName}")
+                    )
+                )
+            }
+            true
+        }
+        findPreference<Preference>("status_diagnostics")?.setOnPreferenceClickListener {
+            val text = IntegrationDiag.lines(requireContext()).joinToString("\n")
+            val cm = requireContext().getSystemService(android.content.ClipboardManager::class.java)
+            cm?.setPrimaryClip(android.content.ClipData.newPlainText("Linphone integration", text))
+            android.widget.Toast.makeText(requireContext(), R.string.integration_diagnostics_copied, android.widget.Toast.LENGTH_SHORT).show()
+            true
+        }
+        findPreference<Preference>("action_diagnostics_clear")?.setOnPreferenceClickListener {
+            IntegrationDiag.clear(requireContext())
+            refreshStatus()
             true
         }
         findPreference<Preference>("status_contacts_permission")?.setOnPreferenceClickListener {
@@ -354,6 +380,16 @@ class IntegrationPreferencesFragment : PreferenceFragmentCompat() {
             else -> getString(R.string.integration_system_call_log_unavailable)
         }
         findPreference<Preference>("self_managed_call_log")?.isEnabled = Build.VERSION.SDK_INT >= 37
+
+        // microphone
+        findPreference<ListPreference>("mic_boost")?.let { it.summary = it.entry }
+        val overlay = Build.VERSION.SDK_INT < Build.VERSION_CODES.M || android.provider.Settings.canDrawOverlays(context)
+        findPreference<Preference>("status_overlay_permission")?.summary = getString(
+            if (overlay) R.string.integration_overlay_permission_granted else R.string.integration_overlay_permission_missing
+        )
+        val diag = IntegrationDiag.lines(context)
+        findPreference<Preference>("status_diagnostics")?.summary =
+            if (diag.isEmpty()) getString(R.string.integration_diagnostics_empty) else diag.takeLast(12).joinToString("\n")
 
         // contacts
         val contacts = ContactsMode.of(store.getString("contacts_mode", null))

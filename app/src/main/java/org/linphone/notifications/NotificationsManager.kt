@@ -750,6 +750,13 @@ class NotificationsManager
 
     @WorkerThread
     private fun showCallNotification(call: Call, isIncoming: Boolean, friend: Friend? = null) {
+        // every path ends here (call states, the SDK starting the in-call Service, the call screen): a managed call
+        // has no Linphone call notification, and Linphone's in-call Service is not made foreground for it (from the
+        // background Android refuses it the microphone; the ConnectionService holds it - ManagedCallForeground)
+        if (ManagedCalls.isManaged(call)) {
+            Log.i("$TAG Managed call: no Linphone call notification")
+            return
+        }
         val notifiable = getNotifiableForCall(call)
 
         val callNotificationIntent = LinphoneUtils.getCallActivityIntent(context).apply {

@@ -156,6 +156,22 @@ object IntegrationPrefs {
 
         @WorkerThread set(value) = setBool("self_managed_call_log", value)
 
+    /** when the microphone is made sure of by bringing Linphone up invisibly for a moment ([ManagedCallForeground]) */
+    enum class MicBoost(val key: String) {
+        ALWAYS("always"),
+        WHEN_REFUSED("when_refused"),
+        NEVER("never");
+
+        companion object {
+            fun of(key: String?) = entries.firstOrNull { it.key == key } ?: ALWAYS
+        }
+    }
+
+    var micBoost: MicBoost
+        @AnyThread get() = MicBoost.of(string("mic_boost", MicBoost.ALWAYS.key))
+
+        @WorkerThread set(value) = setString("mic_boost", value.key)
+
     // ---- contacts --------------------------------------------------------------------------------------------
 
     /** which contacts get the actions "Call via …" / "Message via …" in the system contacts and dialer */
